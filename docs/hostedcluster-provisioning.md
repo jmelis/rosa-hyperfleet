@@ -137,6 +137,7 @@ ef477f3f-0c62-4c6f-9ede-4cbe640e2887  managed  https://d2wkz7m09tqiv4.cloudfront
     --param VpcCidr=10.0.0.0/16
 
 ✗ SUBNETS=$(aws cloudformation describe-stacks --stack-name $CLUSTER_NAME-vpc --query 'Stacks[0].Outputs' --region us-east-1 | jq -r '[ .[] | select(.OutputKey | contains("Subnets")).OutputValue ] | join(",")')
+✗ SUBNET1=$(echo "$SUBNETS" | cut -d',' -f1)
 
 ✗ ./rosa create cluster \
     --cluster-name=$CLUSTER_NAME -y \
@@ -148,21 +149,21 @@ ef477f3f-0c62-4c6f-9ede-4cbe640e2887  managed  https://d2wkz7m09tqiv4.cloudfront
     --compute-machine-type m5.xlarge \
     --oidc-config-id $OIDC_ID
 
-✗ ./rosa create machinepool --cluster=$CLUSTER_NAME --name=workers --replicas=2 --instance-type=m5.xlarge --subnet <one of the subnet ids> --region us-east-1
+✗ ./rosa create machinepool --cluster=$CLUSTER_NAME --name=workers --replicas=2 --instance-type=m5.xlarge --subnet $SUBNET1 --region us-east-1
 
 ✗ ./rosa list clusters
 ID                                    NAME       STATE         TOPOLOGY
 145e4852-8146-4c0f-85d3-8c5d24b800f6  cd-rosa-1  Provisioning  Hosted CP
 
-✗ ./rosa list machinepool -c cd-rosa-1
+✗ ./rosa list machinepool -c $CLUSTER_NAME
 ID       NAME     REPLICAS  INSTANCE TYPE  SUBNET                    STATE
 workers  workers  2         m5.xlarge      subnet-0bceee86d866a8efd  Provisioning
 
-✗ ./rosa list machinepool -c cd-rosa-1
+✗ ./rosa list machinepool -c $CLUSTER_NAME
 ID       NAME     REPLICAS  INSTANCE TYPE  SUBNET                    STATE
 workers  workers  2         m5.xlarge      subnet-0bceee86d866a8efd  Ready
 
-✗ ./rosa delete cluster -c cd-rosa-1
+✗ ./rosa delete cluster -c $CLUSTER_NAME
 ? Are you sure you want to delete cluster cd-rosa-1? Yes
 I: Cluster 'cd-rosa-1' will start deleting now
 ```
