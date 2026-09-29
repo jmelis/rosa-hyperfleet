@@ -173,6 +173,16 @@ make ephemeral-shell
 make ephemeral-shell ID=6bd2d3d7
 ```
 
+### Load Environment Variables Locally
+
+To load environment variables from a provisioned environment into your current shell (without starting the container), source the helper script:
+
+```bash
+source scripts/source-ephemeral-env.sh
+```
+
+This reads from `.ephemeral-envs` and uses fzf to select an environment, then exports all its environment variables (ID, API_URL, REGION, etc.) into your current shell session.
+
 Example:
 
 ```
